@@ -1,0 +1,47 @@
+{% load static %}
+
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ICE H5Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" media="all" href="{% static 'h5game/css/metro.css' %}" />
+
+    <script type="text/javascript" src="{% static 'h5game/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'h5game/js/jquery.plugins.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'h5game/js/metro.js' %}"></script>
+</head> 
+
+<body>
+
+    <div class="metro-layout horizontal">
+
+        <div class="header">
+            <h1>ICE H5Game</h1>
+        </div>
+
+        <div class="content clearfix">
+            <div class="items">
+                {% if game_list %}
+                    <ul>
+                    {% for game in game_list %}
+                        {% if game.is_template %}
+                            <a class="box" href="{% url 'h5game:tpl_view' game.id %}">
+                        {% else %}
+                            <a class="box" href="{% url 'h5game:skin_view' game.id %}">
+                        {% endif %}
+                                <span>{{ game.get_name }}</span>
+                                <img class="icon" src="{% static 'h5game/imgs' %}/{{ game.proj_dir }}.png" alt="" />
+                            </a>
+                    {% endfor %}       
+                    </ul>
+				{% else %}
+				    <p>No h5game are available.</p>
+				{% endif %}
+           </div>
+        </div>
+
+    </div>
+
+</body>
