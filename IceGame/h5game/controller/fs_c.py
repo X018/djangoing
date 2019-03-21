@@ -63,12 +63,28 @@ class FileSysCtrl(object):
 
 
     @staticmethod
-    def sysn_skin_from_tpl(skin_id, tpl_id):
-        tpl_list = GameTpl.objects.filter(id=tpl_id)
-        tpl = tpl_list and tpl_list[0] or None
-        if tpl is not None:
-            skin_list = GameSkin.objects.filter(id=skin_id)
-            skin = skin_list and skin_list[0] or None
-            if skin is not None:
-                pass
+    def sysn_skin_by_tpl(skin_id):
+        skin_list = GameSkin.objects.filter(id=skin_id)
+        skin = skin_list and skin_list[0] or None
+        if skin is not None:
+            tpl_list = GameTpl.objects.filter(id=skin.get_tpl_id())
+            tpl = tpl_list and tpl_list[0] or None
+            if tpl is not None:
+                base_dir = settings.BASE_DIR
+                tpl_path = os.path.join(base_dir, tpl.get_dir())
+                skin_path = os.path.join(base_dir, skin.get_dir())
+                for df_name in GameConf.GAME_DIRS_FILES:
+                    df_path = os.path.join(tpl_path, df_name)
+                    if os.path.isfile(df_path):
+                        shutil.copyfile(df_path, os.path.join(skin_path, df_name))
+                    else:
+                        for (root, dirs, files) in os.walk(df_path):
+                            for file_name in files:
+                                tpl_file_path = os.path.join(root, file_name)
+                                skin_file_path = tpl_file_path.replace(tpl_path, skin_path)
+                                if not os.path.exists(skin_file_path):
+                                    skin_dir_path = os.path.dirname(skin_file_path)
+                                    if not os.path.exists(skin_dir_path) and skin_dir_path != '':
+                                        os.makedirs(skin_dir_path)
+                                    shutil.copyfile(tpl_file_path, skin_file_path)
 
